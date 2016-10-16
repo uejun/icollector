@@ -1,8 +1,8 @@
 # PPAP
 
-PPAP is 
 複数の画像取得APIラッパー
-## 使用API
+
+## Using API
 * [Bing Search API]()
 * [Google Custom Search API]()
 * ~~Flickr API~~
