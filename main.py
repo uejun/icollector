@@ -1,10 +1,18 @@
 import urllib2, sys
+import json
 import BingImageClient
+
+from json import JSONEncoder
+class MyEncoder(JSONEncoder):
+  def default(self, o):
+    return o.__dict__
 
 def main():
   imgs = BingImageClient.find('hoge')
-  for img in imgs:
-      print(str(img))
+  # for img in imgs:
+  #     print(str(img))
+
+  print(MyEncoder().encode(imgs))
   # term = sys.argv[1]
   # location = sys.argv[2]
   # params = search_params(term, location)
