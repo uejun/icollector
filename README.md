@@ -3,10 +3,10 @@
 複数の画像取得APIラッパー
 
 ## Using API
-* [Bing Search API]()
-* [Google Custom Search API]()
-* ~~Flickr API~~
-* ~~Instagram~~
+* [Bing Search API](https://www.microsoft.com/cognitive-services)
+* [Google Custom Search API](https://developers.google.com/custom-search/json-api/v1/using_rest?hl=ja)
+* ~~[Flickr API](https://www.flickr.com/services/api/flickr.photos.search.html)~~
+* ~~[Instagram](https://www.instagram.com/developer/endpoints/media/)~~
 
 ## Usage
 
