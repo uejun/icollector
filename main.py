@@ -1,6 +1,7 @@
 import urllib2, sys
 import json
 import BingImageClient
+import GCSImageClient
 
 from json import JSONEncoder
 class MyEncoder(JSONEncoder):
@@ -8,9 +9,9 @@ class MyEncoder(JSONEncoder):
     return o.__dict__
 
 def main():
-  imgs = BingImageClient.find('hoge')
-  # for img in imgs:
-  #     print(str(img))
+  bingImgs = BingImageClient.find('hoge')
+  GCSImgs = GCSImageClient.find('hoge')
+  imgs = bingImgs + GCSImgs
 
   print(MyEncoder().encode(imgs))
   # term = sys.argv[1]
