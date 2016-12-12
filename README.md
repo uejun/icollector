@@ -1,6 +1,6 @@
-# PPAP
+# icollector
 
-複数の画像取得APIラッパー
+Image Search API Wrapper
 
 ## Using API
 * [Bing Search API](https://www.microsoft.com/cognitive-services)
