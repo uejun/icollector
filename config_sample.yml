@@ -1,0 +1,11 @@
+Bing:
+  base_url: "https://api.cognitive.microsoft.com/bing/v5.0/images/search"
+  auth_header: Ocp-Apim-Subscription-Key
+  subscription_keys:
+    - set_your_subscription_key
+
+Google:
+  base_url: "https://www.googleapis.com/customsearch/v1"
+  api_key: set_your_api_key
+  engine_id: set_your_engine_id
+  search_type: image
