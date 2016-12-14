@@ -8,28 +8,95 @@ Image Search API Wrapper
 * ~~[Flickr API](https://www.flickr.com/services/api/flickr.photos.search.html)~~
 * ~~[Instagram](https://www.instagram.com/developer/endpoints/media/)~~
 
-## Usage
-
+## Usage Overview
+You need to copy config_sample.yml to config.yml and modify keys(e.g.
+subscription_keys) to valid one.
 ```
-python main.py -h
-usage: main.py [-h] [--offset OFFSET] [--count COUNT] [--mkt MKT] SEARCH_WORD
+# Copy config template
+$ cp config_sample.yml config.yml
 
-Search Image from external api
-
-positional arguments:
-  keyword          search keyword
-
-optional arguments:
-  -h, --help       show this help message and exit
-  --offset OFFSET
-  --count COUNT
-  --mkt MKT
-$ python main.py face --offset 3 --count 10 --mkt ja-JP
-[{"url": "https://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=OtaxxPAfkwavqKL0wQoWgF2SJdGQZ3ZJf6NRdN7YkbI&v=1&r=https%3a%2f%2fm2hair.files.wordpress.com%2f2014%2f07%2flong-square-face.jpg&p=DevEx,5062.1", "width": 550, "contentSize": "62114 B", "integratedId": 1, "height": 550}, {"url": "http://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=E1ClITPvYYp6u0i-Fi-e0DHlnXw8UhQsSJMYG7PImQo&v=1&r=http%3a%2f%2fupload.wikimedia.org%2fwikipedia%2fcommons%2fd%2fde%2fTom-Limoncelli-face-hires.jpg&p=DevEx,5056.1", "width": 2094, "contentSize": "1194273 B", "integratedId": 1, "height": 2518}, {"url": "http://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=U3DN2YUp5TMwU7UFOm7FPwlPzp35HjdGGylIcAVfPv0&v=1&r=http%3a%2f%2fimg.mota.ru%2fupload%2fwallpapers%2f2011%2f06%2f01%2f09%2f05%2f25877%2fmota_ru_1060110-1920x1080.jpg&p=DevEx,5050.1", "width": 1920, "contentSize": "112406 B", "integratedId": 1, "height": 1080}, {"url": "https://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=QQEL6938RCrjUkfMESjHoM0uw1p9B8GQwE2bIDw-cnw&v=1&r=https%3a%2f%2fwww.dermisa.com%2fwordpress%2fwp-content%2fuploads%2f2012%2f03%2fWomanTouchFace.png&p=DevEx,5044.1", "width": 1408, "contentSize": "2224233 B", "integratedId": 1, "height": 1636}, {"url": "http://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=yPI8XUO6JI0Y_0U1BAZqfrkO--1_mEyL_AB-P0VAbxU&v=1&r=http%3a%2f%2fko-te.com%2fen%2fwp-content%2fuploads%2f2013%2f03%2fSkincare-Natural-face-lift-mask.jpg&p=DevEx,5038.1", "width": 1280, "contentSize": "353627 B", "integratedId": 1, "height": 828}, {"url": "http://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=3If0M1JT0IHK3TxxmF8R3uSWmy9gXsrf5WNgsf3rfCw&v=1&r=http%3a%2f%2fefdreams.com%2fdata_images%2fdreams%2fface%2fface-03.jpg&p=DevEx,5032.1", "width": 864, "contentSize": "111542 B", "integratedId": 1, "height": 960}, {"url": "http://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=96QvMooThgyRhJeHTXwfcsKzMlmpORnzIghO3AK8Jkc&v=1&r=http%3a%2f%2fwww.incrediblethings.com%2fwp-content%2fuploads%2fresized%2f72c89ead877fcf7059ca23df2aebcb2a_1_c_595x0.jpg&p=DevEx,5026.1", "width": 595, "contentSize": "192220 B", "integratedId": 1, "height": 683}, {"url": "http://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=Hkp8r6kzRtEoMwl9fTqjct7dWiI30skzKWX04w7Mc0k&v=1&r=http%3a%2f%2fwww.sephora.com%2fcontentimages%2fcategories%2fmakeup%2fCONTOURING%2f030515%2fanimations%2fround%2fround_01_before.jpg&p=DevEx,5020.1", "width": 338, "contentSize": "34647 B", "integratedId": 1, "height": 396}, {"url": "http://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=0R5AOuUjaxdqdw3wRCJImp8UWsTJIErNMf0wzBYATg4&v=1&r=http%3a%2f%2fyummymummybeauty.com%2fwp-content%2fuploads%2f2012%2f01%2fbeauty-face1.jpg&p=DevEx,5014.1", "width": 1414, "contentSize": "1906157 B", "integratedId": 1, "height": 2121}, {"url": "http://www.bing.com/cr?IG=0B65A8CA221A445E8FABF43F2DBE904A&CID=0160AB6957E868AF1B3CA2DE56FA69BA&rd=1&h=f_u_p_hY_tBTw5LB3iFp_n-fcnKg_PwEkELGAMhnc0U&v=1&r=http%3a%2f%2fdreamatico.com%2fdata_images%2fface%2fface-3.jpg&p=DevEx,5008.1", "width": 1200, "contentSize": "111836 B", "integratedId": 1, "height": 1200}]
-
+# Edit config
+$ vi config.yml
 ```
 
-## TODO
-* API Gateway
-* メタ情報の取得
-* Bing以外の画像APIの対応
+icollector has 3 modes(cli, web, aws_lambda)
+
+```
+$ python icollector.py --help
+
+Usage: icollector.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  cli  cli entry point.
+  web  web api entry point.
+
+```
+
+## Usage Cli Subcommand
+```
+$ python icollector.py cli -h
+Usage: icollector.py cli [OPTIONS] KEYWORD
+
+  Run cli search.
+
+  KEYWORD(positional arg): word which you want to search.
+
+  You can specify --bing and --google option like below.
+
+  --bing "mkt=ja-JP, color=Gray" --google "safe=high, imgType=news"
+
+Options:
+  -c, --count INTEGER  Count by each provider.
+  -b, --bing TEXT      Bing search optional queries
+  -g, --google TEXT    Google search optional queries
+  -o, --output TEXT    Output file name
+  -h, --help           Show this message and exit.
+ ```
+This results' format is LTSV.
+'-c' option specifies the count of each provider requests.
+So Total counts are the multiplied number of providers (i.e so far 2).
+
+Example.
+```
+$ python icollector.py cli banana -c 1
+provider_id:1	url:http://www.bing.com/cr?IG=C0019F0B674E4A9ABD344FA6EDB2B279&CID=1E206F3198246F3A3DFD66DA99366E71&rd=1&h=JE9jlpJMuqdCiBHIIKUMm7ffA-AuWi-d3g7FnYFHMoo&v=1&r=http%3a%2f%2fwww.hangthebankers.com%2fwp-content%2fuploads%2f2012%2f08%2fBanana-1024x679.jpg&p=DevEx,5008.1	width:1024	height:679	byte_size:46802 B
+
+provider_id:2	url:https://upload.wikimedia.org/wikipedia/commons/4/44/Bananas_white_background_DS.jpg	width:3000	height:2000	byte_size:1559778
+```
+
+## Usage Web Subcommand 
+```
+$ python icollector.py web -h
+Usage: icollector.py web [OPTIONS]
+
+  Launch web search api.
+
+  This allows you to search by HTTP like below.
+
+  [GET] http://localhost:5000/search?keyword=anything&count=10
+
+  If you want to specify other optional queries, you add them with
+  provider's annotation (e.g. bing_) like below.
+
+  ?bing_mkt=ja-JP&google_imgSize=large
+
+Options:
+  -h, --help  Show this message and exit.
+ ```
+This returns JSON response.
+Example.
+```
+$ python icollector.py web
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+  
+$ curl http://127.0.0.1:5000/search?keyword=banana&count=1
+[{"provider_id": 1, "height": 679, "byte_size": "46802 B", "url": "http://www.bing.com/cr?IG=7BDAA3D220564349A71398666C320946&CID=0ACF10B1D6806FD83C1D195AD7926E9F&rd=1&h=JE9jlpJMuqdCiBHIIKUMm7ffA-AuWi-d3g7FnYFHMoo&v=1&r=http%3a%2f%2fwww.hangthebankers.com%2fwp-content%2fuploads%2f2012%2f08%2fBanana-1024x679.jpg&p=DevEx,5008.1", "width": 1024}, {"provider_id": 2, "height": 2000, "byte_size": 1559778, "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Bananas_white_background_DS.jpg", "width": 3000}]
+
+```
+
+## Usage AWS Lambda mode
+Specify "aws_lambda" in interface.py as lambda function.
+Their query keys are the same Web mode above.

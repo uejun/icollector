@@ -20,14 +20,26 @@ def api():
     pass
 
 
-@api.command()
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
+@api.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('keyword')
 @click.option('--count', '-c', default=DEFAULT_COUNT, type=int, help='Count by each provider.')
 @click.option('--bing', '-b', default='', help='Bing search optional queries')
 @click.option('--google', '-g', default='', help='Google search optional queries')
-@click.option('--output', '-o', default='stdoutput', help='Output')
+@click.option('--output', '-o', default='stdoutput', help='Output file name')
 def cli(keyword, count, bing, google, output):
-    """cli entry point."""
+    """Run cli search.
+
+        KEYWORD(positional arg): word which you want to search.
+
+        You can specify --bing and --google option like below.
+
+        --bing "mkt=ja-JP, color=Gray"
+        --google "safe=high, imgType=news"
+
+    """
     # convert to dict of queries.
     bing_optional_queries = util.parse_str_queries(bing)
     google_optional_queries = util.parse_str_queries(google)
@@ -47,7 +59,7 @@ def cli(keyword, count, bing, google, output):
 
 
 def aws_lambda(event, context):
-    """aws lambda entry point."""
+    """Aws lambda entry point."""
     keyword = str(event['keyword'])
     count = int(event['count']) if('count' in event) else DEFAULT_COUNT
 
@@ -61,9 +73,20 @@ def aws_lambda(event, context):
     return results
 
 
-@api.command()
+@api.command(context_settings=CONTEXT_SETTINGS)
 def web():
-    """web api entry point."""
+    """Launch web search api.
+
+        This allows you to search by HTTP like below.
+
+        [GET] http://localhost:5000/search?keyword=anything&count=10
+
+        If you want to specify other optional queries,
+        you add them with provider's annotation (e.g. bing_) like below.
+
+        ?bing_mkt=ja-JP&google_imgSize=large
+
+    """
     from flask import Flask
     from flask import request
     from flask import Response
