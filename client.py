@@ -38,6 +38,7 @@ class AbstractSearchClient(metaclass=ABCMeta):
     base_header = {}
     base_query = {}
     count_per_req = 0
+    keyword_query_key = ''
 
     def __init__(self):
         pass
@@ -53,53 +54,54 @@ class AbstractSearchClient(metaclass=ABCMeta):
                 List of ImageInfo returned by search api provider.
 
         """
-        # set keyword to queries
-        merged_queries = self._add_queries(keyword, total, queries)
-        merged_headers = self._add_headers(headers)
+        queries.update(self.base_query)
+        headers.update(self.base_header)
 
-        steps = self._calc_steps(total)
+        queries[self.keyword_query_key] = keyword
 
-        image_info_list = []
-        for _ in range(steps):
+        # return list of ImageInfo
+        return self._schedule_search(total, queries, headers)
+
+    def _schedule_search(self, total, queries, headers):
+        results = []
+        for step in range(self._calc_steps(total)):
+            count = self._calc_count(total)
+            offset = step * count
+
+            self._set_paging(queries, offset, count)
+
+            step_result = self._request(queries, headers)
+            results.extend(step_result)
+        return results
+
+    def _request(self, queries, headers):
             resp = requests.get(self.base_url,
-                                params=merged_queries,
-                                headers=merged_headers)
-
+                                params=queries,
+                                headers=headers)
             if resp.status_code != 200:
                 resp.raise_for_status()
-
             if resp.headers.get('content-length') in (0, None):
                 raise SearchRequestError("invalid content-length")
-
-            results = self._convert(resp.json())
-            image_info_list.extend(results)
-
-        return image_info_list
+            return self._convert(resp.json())
 
     def _calc_steps(self, total):
         return math.ceil(total / self.count_per_req)
+
+    def _calc_count(self, total):
+        return self.count_per_req if total > self.count_per_req else total
 
     @abstractclassmethod
     def parse_config(cls, data: dict):
         pass
 
     @abstractmethod
-    def _add_queries(self, keyword, total, queries):
+    def _set_paging(self, queries, offset, count):
         pass
-
-    def _calc_count(self, total):
-        return self.count_per_req if total > self.count_per_req else total
-
-    @abstractmethod
-    def _add_headers(self, headers):
-        all_headers = {}
-        all_headers.update(self.base_header)
-        all_headers.update(headers)
-        return all_headers
 
     @abstractmethod
     def _convert(self, resp: dict) -> List[ImageInfo]:
         pass
+
 
 
 class BingSearchClient(AbstractSearchClient):
@@ -108,19 +110,13 @@ class BingSearchClient(AbstractSearchClient):
         bing = data['Bing']
         cls.base_url = bing["base_url"]
         cls.count_per_req = bing['count_per_req']
+        cls.keyword_query_key = 'q'
         cls.base_header = {
             'Ocp-Apim-Subscription-Key': bing["subscription_keys"][0]}
 
-    def _add_queries(self, keyword, total, queries):
-        all_queries = {}
-        all_queries.update(self.base_query)
-        all_queries['q'] = keyword
-        all_queries['count'] = self._calc_count(total)
-        all_queries.update(queries)
-        return all_queries
-    
-    def _add_headers(self, headers):
-        return super(BingSearchClient, self)._add_headers(headers)
+    def _set_paging(self, queries, offset, count):
+        queries['offset'] = offset
+        queries['count'] = count
 
     def _convert(self, resp: dict) -> List[ImageInfo]:
         image_info_list = []
@@ -141,20 +137,14 @@ class GoogleSearchClient(AbstractSearchClient):
         google = data['Google']
         cls.base_url = google['base_url']
         cls.count_per_req = google['count_per_req']
+        cls.keyword_query_key = 'q'
         cls.base_query = {"key": google['api_key'],
                           "cx": google['engine_id'],
                           "searchType": google['search_type']}
 
-    def _add_queries(self, keyword, total, queries):
-        all_queries = {}
-        all_queries.update(self.base_query)
-        all_queries['q'] = keyword
-        all_queries['num'] = self._calc_count(total)
-        all_queries.update(queries)
-        return all_queries
-    
-    def _add_headers(self, headers):
-        return super(GoogleSearchClient, self)._add_headers(headers)
+    def _set_paging(self, queries, offset, count):
+        queries['start'] = offset + 1
+        queries['num'] = count
 
     def _convert(self, resp: dict) -> List[ImageInfo]:
         image_info_list = []
