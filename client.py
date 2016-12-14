@@ -1,7 +1,8 @@
 """This module provides image search http request clients.
 
-    モジュールロード時にconfig.ymlを読み込む.
-    読み込みが失敗した場合プロセスは終了する.
+    抽象SearchClientと各APIプロバイダーに対応する具象SearchClientを提供する.
+    モジュールロード時にconfig.ymlを読み込み, 各SearchClientのクラスプロパティが
+    セットされる. 読み込みが失敗した場合プロセスは終了する.
 
     Bing reference:
     https://www.microsoft.com/cognitive-services/en-us/bing-image-search-api
@@ -39,9 +40,6 @@ class AbstractSearchClient(metaclass=ABCMeta):
     base_query = {}
     count_per_req = 0
     keyword_query_key = ''
-
-    def __init__(self):
-        pass
 
     def search(self, keyword, total, queries={}, headers={}) -> List[ImageInfo]:
         """Search image by http get method.
