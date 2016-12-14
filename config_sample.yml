@@ -1,11 +1,12 @@
 Bing:
   base_url: "https://api.cognitive.microsoft.com/bing/v5.0/images/search"
-  auth_header: Ocp-Apim-Subscription-Key
+  count_per_req: 150 # Max 150, Default: 35, Actual results is less than this.
   subscription_keys:
     - set_your_subscription_key
 
 Google:
   base_url: "https://www.googleapis.com/customsearch/v1"
+  count_per_req: 10 # between 1 and 10, inclusive.
   api_key: set_your_api_key
   engine_id: set_your_engine_id
   search_type: image
