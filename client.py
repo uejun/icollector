@@ -14,7 +14,6 @@
 from abc import ABCMeta
 from abc import abstractclassmethod
 from abc import abstractmethod
-import enum
 import math
 import sys
 from typing import List
@@ -25,16 +24,11 @@ import yaml
 from domain import ImageInfo
 
 
-class PROVIDER_ID(enum.Enum):
-    """検索APIのプロパイダー識別用Enum."""
-    BING = 1
-    GOOGLE = 2
-
-
 class AbstractSearchClient(metaclass=ABCMeta):
     """provide search func and converter func.
 
     """
+    provider_id = 0  # 検索APIのプロバイダー識別用
     base_url = ""
     base_header = {}
     base_query = {}
@@ -73,14 +67,14 @@ class AbstractSearchClient(metaclass=ABCMeta):
         return results
 
     def _request(self, queries, headers):
-            resp = requests.get(self.base_url,
-                                params=queries,
-                                headers=headers)
-            if resp.status_code != 200:
-                resp.raise_for_status()
-            if resp.headers.get('content-length') in (0, None):
-                raise SearchRequestError("invalid content-length")
-            return self._convert(resp.json())
+        resp = requests.get(self.base_url,
+                            params=queries,
+                            headers=headers)
+        if resp.status_code != 200:
+            resp.raise_for_status()
+        if resp.headers.get('content-length') in (0, None):
+            raise SearchRequestError("invalid content-length")
+        return self._convert(resp.json())
 
     def _calc_steps(self, total):
         return math.ceil(total / self.count_per_req)
@@ -101,11 +95,12 @@ class AbstractSearchClient(metaclass=ABCMeta):
         pass
 
 
-
 class BingSearchClient(AbstractSearchClient):
+
     @classmethod
     def parse_config(cls, data: dict):
         bing = data['Bing']
+        cls.provider_id = bing["provider_id"]
         cls.base_url = bing["base_url"]
         cls.count_per_req = bing['count_per_req']
         cls.keyword_query_key = 'q'
@@ -119,7 +114,7 @@ class BingSearchClient(AbstractSearchClient):
     def _convert(self, resp: dict) -> List[ImageInfo]:
         image_info_list = []
         for item in resp['value']:
-            info = ImageInfo(provider_id=PROVIDER_ID.BING,
+            info = ImageInfo(provider_id=self.provider_id,
                              url=item['contentUrl'],
                              width=item['width'],
                              height=item['height'],
@@ -130,9 +125,11 @@ class BingSearchClient(AbstractSearchClient):
 
 
 class GoogleSearchClient(AbstractSearchClient):
+
     @classmethod
     def parse_config(cls, data: dict):
         google = data['Google']
+        cls.provider_id = google["provider_id"]
         cls.base_url = google['base_url']
         cls.count_per_req = google['count_per_req']
         cls.keyword_query_key = 'q'
@@ -147,7 +144,7 @@ class GoogleSearchClient(AbstractSearchClient):
     def _convert(self, resp: dict) -> List[ImageInfo]:
         image_info_list = []
         for item in resp['items']:
-            info = ImageInfo(provider_id=PROVIDER_ID.GOOGLE,
+            info = ImageInfo(provider_id=self.provider_id,
                              url=item['link'],
                              width=item['image']['width'],
                              height=item['image']['height'],
@@ -169,4 +166,3 @@ try:
 except Exception as e:
     print(e)
     sys.exit(1)
-

@@ -33,5 +33,3 @@ def search(keyword: str, count: int, bing_queries={}, google_queries={}) \
     image_info_list.extend(google_imaes)
 
     return image_info_list
-
-
