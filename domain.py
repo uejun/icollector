@@ -7,7 +7,7 @@ class ImageInfo:
 
     def __init__(self, provider_id, url, width, height, byte_size):
         self.provider_id = provider_id
-        self.url = url
+        self.url = url.replace('\n', '').replace(' ', '')
         self.width = width
         self.height = height
         self.byte_size = byte_size
@@ -26,7 +26,7 @@ class ImageInfo:
                "url:{}\t" \
                "width:{}\t" \
                "height:{}\t" \
-               "byte_size:{}\n".format(self.provider_id,
+               "byte_size:{}".format(self.provider_id,
                                        self.url,
                                        self.width,
                                        self.height,

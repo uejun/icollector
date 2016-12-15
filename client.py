@@ -114,13 +114,14 @@ class BingSearchClient(AbstractSearchClient):
     def _convert(self, resp: dict) -> List[ImageInfo]:
         image_info_list = []
         for item in resp['value']:
+            size_str = item['contentSize']
+            byte_size = int(size_str.replace(' B', ''))
             info = ImageInfo(provider_id=self.provider_id,
                              url=item['contentUrl'],
                              width=item['width'],
                              height=item['height'],
-                             byte_size=item['contentSize'])
+                             byte_size=byte_size)
             image_info_list.append(info)
-
         return image_info_list
 
 
