@@ -113,7 +113,12 @@ def web():
             print(info)
         return Response(json.dumps(infos), mimetype='application/json')
 
-    app.run()
+    @app.route("/ping")
+    def helth_check():
+        return "Cool!"
+
+
+    app.run(port=9000, host='0.0.0.0')
 
 
 
