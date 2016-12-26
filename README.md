@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="https://www.dropbox.com/s/nmo71xslwn3slm5/icollector-oruche.png?dl=1" alt="icollector!"/>
+</p>
+
 # icollector
 
 Image Search API Wrapper
