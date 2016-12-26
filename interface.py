@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """This module provides search application interface.
 
     Provided Interface
@@ -5,6 +6,7 @@
         - AWS Lambda Function
         - Web API
 """
+from __future__ import print_function
 import json
 
 import click
@@ -73,9 +75,7 @@ def aws_lambda(event, context):
     return results
 
 
-@api.command(context_settings=CONTEXT_SETTINGS)
-def web():
-    """Launch web search api.
+"""Launch web search api.
 
         This allows you to search by HTTP like below.
 
@@ -85,40 +85,39 @@ def web():
         you add them with provider's annotation (e.g. bing_) like below.
 
         ?bing_mkt=ja-JP&google_imgSize=large
+"""
+from flask import Flask
+from flask import request
+from flask import Response
+app = Flask(__name__)
 
-    """
-    from flask import Flask
-    from flask import request
-    from flask import Response
-    app = Flask(__name__)
+@app.route("/search")
+def handler():
+    keyword = str(request.args.get('keyword'))
+    if 'count' in request.args:
+        count = int(request.args.get('count'))
+    else:
+        count = DEFAULT_COUNT
 
-    @app.route("/search")
-    def handler():
-        keyword = str(request.args.get('keyword'))
-        if 'count' in request.args:
-            count = int(request.args.get('count'))
-        else:
-            count = DEFAULT_COUNT
+    bing_optional_queries = util.extract(request.args, 'bing_')
+    google_optional_queries = util.extract(request.args, 'google_')
 
-        bing_optional_queries = util.extract(request.args, 'bing_')
-        google_optional_queries = util.extract(request.args, 'google_')
+    infos = search(keyword,
+                   count,
+                   bing_optional_queries,
+                   google_optional_queries)
 
-        infos = search(keyword,
-                       count,
-                       bing_optional_queries,
-                       google_optional_queries)
+    infos = [info.to_dict() for info in infos]
+    for info in infos:
+        print(info)
+    return Response(json.dumps(infos), mimetype='application/json')
 
-        infos = [info.to_dict() for info in infos]
-        for info in infos:
-            print(info)
-        return Response(json.dumps(infos), mimetype='application/json')
-
-    @app.route("/ping")
-    def helth_check():
-        return "Cool!"
+@app.route("/ping")
+def helth_check():
+    return "Cool!"
 
 
-    app.run(port=9000, host='0.0.0.0')
+#app.run(port=9000, host='0.0.0.0')
 
 
 

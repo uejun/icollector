@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
 """This module provides utilities."""
+import typing
 
 
-def parse_str_queries(queries_str: str) -> dict:
+def parse_str_queries(queries_str):
+    # type: (str) -> dict
     """str型で与えられるqueryのsetをdictに変換する.
 
         Example:
@@ -27,13 +30,15 @@ def parse_str_queries(queries_str: str) -> dict:
     return query_dict
 
 
-def check_int(s: str) -> bool:
+def check_int(s):
+    # type: (str) -> bool
     if s[0] in ('-', '+'):
         return s[1:].isdigit()
     return s.isdigit()
 
 
-def extract(input: dict, annotation: str) -> dict:
+def extract(input, annotation):
+    # type: (dict, str) -> dict
     """与えられたinput辞書のkeys()でannotation文字列を含むものだけ抽出する.
 
         整数に変換できる文字列値は文字列に変換する.

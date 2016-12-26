@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+import typing
 from typing import List
 
 from client import BingSearchClient
@@ -8,8 +10,8 @@ bing_client = BingSearchClient()
 google_client = GoogleSearchClient()
 
 
-def search(keyword: str, count: int, bing_queries={}, google_queries={}) \
-        -> List[ImageInfo]:
+def search(keyword, count, bing_queries={}, google_queries={}):
+    # type: (str, int, dict, dict) -> List[ImageInfo]
     """複数のAPIプロバイダーをハンドリングする.
 
         検索は各クライントに委譲する.
@@ -27,9 +29,9 @@ def search(keyword: str, count: int, bing_queries={}, google_queries={}) \
     image_info_list = []
 
     bing_images = bing_client.search(keyword, count, queries=bing_queries)
-    google_imaes = google_client.search(keyword, count, queries=google_queries)
+    google_images = google_client.search(keyword, count, queries=google_queries)
 
     image_info_list.extend(bing_images)
-    image_info_list.extend(google_imaes)
+    image_info_list.extend(google_images)
 
     return image_info_list

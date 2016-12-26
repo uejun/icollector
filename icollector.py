@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """This module provides program entry point."""
 import interface
 

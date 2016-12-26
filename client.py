@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """This module provides image search http request clients.
 
     抽象SearchClientと各APIプロバイダーに対応する具象SearchClientを提供する.
@@ -11,11 +12,13 @@
     Google reference:
     https://developers.google.com/custom-search/json-api/v1/reference/cse/list
 """
+from __future__ import print_function
 from abc import ABCMeta
-from abc import abstractclassmethod
+#from abc import abstractclassmethod # needed when supports python3 only.
 from abc import abstractmethod
 import math
 import sys
+import typing
 from typing import List
 
 import requests
@@ -24,10 +27,23 @@ import yaml
 from domain import ImageInfo
 
 
-class AbstractSearchClient(metaclass=ABCMeta):
+# 下記はMetaクラスをpython2と3の両方に対応させるため. Lambdaが3に対応したら不要.
+class abstractclassmethod(classmethod):
+
+    __isabstractmethod__ = True
+
+    def __init__(self, callable):
+        callable.__isabstractmethod__ = True
+        super(abstractclassmethod, self).__init__(callable)
+
+
+class AbstractSearchClient():
     """provide search func and converter func.
 
     """
+    # python2 対応. python3ではmetaclass=ABCMeta.
+    __metaclass__ = ABCMeta
+
     provider_id = 0  # 検索APIのプロバイダー識別用
     base_url = ""
     base_header = {}
@@ -35,7 +51,7 @@ class AbstractSearchClient(metaclass=ABCMeta):
     count_per_req = 0
     keyword_query_key = ''
 
-    def search(self, keyword, total, queries={}, headers={}) -> List[ImageInfo]:
+    def search(self, keyword, total, queries={}, headers={}):
         """Search image by http get method.
 
             Args:
@@ -77,13 +93,15 @@ class AbstractSearchClient(metaclass=ABCMeta):
         return self._convert(resp.json())
 
     def _calc_steps(self, total):
-        return math.ceil(total / self.count_per_req)
+        # python2に対応するためfloat()とint()を使用
+        return int(math.ceil(float(total) / self.count_per_req))
 
     def _calc_count(self, total):
         return self.count_per_req if total > self.count_per_req else total
 
     @abstractclassmethod
-    def parse_config(cls, data: dict):
+    def parse_config(cls, data):
+        # type: (dict) -> None
         pass
 
     @abstractmethod
@@ -91,14 +109,16 @@ class AbstractSearchClient(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _convert(self, resp: dict) -> List[ImageInfo]:
+    def _convert(self, resp):
+        # type: (dict) -> List[ImageInfo]
         pass
 
 
 class BingSearchClient(AbstractSearchClient):
 
     @classmethod
-    def parse_config(cls, data: dict):
+    def parse_config(cls, data):
+        # type: (dict) -> None
         bing = data['Bing']
         cls.provider_id = bing["provider_id"]
         cls.base_url = bing["base_url"]
@@ -111,7 +131,8 @@ class BingSearchClient(AbstractSearchClient):
         queries['offset'] = offset
         queries['count'] = count
 
-    def _convert(self, resp: dict) -> List[ImageInfo]:
+    def _convert(self, resp):
+        # type: (dict) -> List[ImageInfo]
         image_info_list = []
         for item in resp['value']:
             size_str = item['contentSize']
@@ -128,7 +149,8 @@ class BingSearchClient(AbstractSearchClient):
 class GoogleSearchClient(AbstractSearchClient):
 
     @classmethod
-    def parse_config(cls, data: dict):
+    def parse_config(cls, data):
+        # type: (dict) -> None
         google = data['Google']
         cls.provider_id = google["provider_id"]
         cls.base_url = google['base_url']
@@ -142,7 +164,8 @@ class GoogleSearchClient(AbstractSearchClient):
         queries['start'] = offset + 1
         queries['num'] = count
 
-    def _convert(self, resp: dict) -> List[ImageInfo]:
+    def _convert(self, resp):
+        # type: (dict) -> List[ImageInfo]
         image_info_list = []
         for item in resp['items']:
             info = ImageInfo(provider_id=self.provider_id,

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """This module provides domain model."""
 
 
@@ -26,7 +27,7 @@ class ImageInfo:
                "url:{}\t" \
                "width:{}\t" \
                "height:{}\t" \
-               "byte_size:{}".format(self.provider_id,
+               "byte_size:{}\n".format(self.provider_id,
                                        self.url,
                                        self.width,
                                        self.height,
