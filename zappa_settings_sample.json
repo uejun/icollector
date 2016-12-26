@@ -1,0 +1,8 @@
+{
+    "dev": {
+        "app_function": "interface.app", 
+        "s3_bucket": "zappa-xg8lei1a2",
+        "aws_region": "ap-northeast-1",
+        "profile_name": "ynu_ueda"
+    }
+}
