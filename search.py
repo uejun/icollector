@@ -10,7 +10,7 @@ bing_client = BingSearchClient()
 google_client = GoogleSearchClient()
 
 
-def search(keyword, count, bing_queries={}, google_queries={}):
+def search(keyword, count, bing_queries=None, google_queries=None):
     # type: (str, int, dict, dict) -> List[ImageInfo]
     """複数のAPIプロバイダーをハンドリングする.
 
@@ -26,6 +26,12 @@ def search(keyword, count, bing_queries={}, google_queries={}):
             List of ImageInfo.
 
     """
+    if bing_queries is None:
+        bing_queries = {}
+
+    if google_queries is None:
+        google_queries = {}
+
     image_info_list = []
 
     bing_images = bing_client.search(keyword, count, queries=bing_queries)

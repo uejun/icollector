@@ -91,6 +91,7 @@ from flask import request
 from flask import Response
 app = Flask(__name__)
 
+
 @app.route("/search")
 def handler():
     keyword = str(request.args.get('keyword'))
@@ -108,16 +109,13 @@ def handler():
                    google_optional_queries)
 
     infos = [info.to_dict() for info in infos]
-    for info in infos:
-        print(info)
-    return Response(json.dumps(infos), mimetype='application/json')
+    return Response(json.dumps({"items": infos}), mimetype='application/json')
+
 
 @app.route("/ping")
 def helth_check():
     return "Cool!"
 
-
-#app.run(port=9000, host='0.0.0.0')
 
 
 

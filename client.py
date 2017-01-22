@@ -16,6 +16,7 @@ from __future__ import print_function
 from abc import ABCMeta
 #from abc import abstractclassmethod # needed when supports python3 only.
 from abc import abstractmethod
+import logging
 import math
 import sys
 import typing
@@ -188,5 +189,5 @@ try:
         BingSearchClient.parse_config(data)
         GoogleSearchClient.parse_config(data)
 except Exception as e:
-    print(e)
+    logging.error(e)
     sys.exit(1)
